@@ -5,7 +5,7 @@ import requests
 from lxml import html
 import unicodecsv as csv
 import argparse
-
+from datetime import datetime
 
 def parse_listing(keyword, place):
     """
@@ -30,6 +30,7 @@ def parse_listing(keyword, place):
     # Adding retries
     for retry in range(10):
         try:
+            requests.packages.urllib3.disable_warnings()
             response = requests.get(url, verify=False, headers=headers)
             print("parsing page")
             if response.status_code == 200:
@@ -124,10 +125,11 @@ def write_data_to_file(keyword, place, scraped_data):
 if __name__ == "__main__":
 
     argparser = argparse.ArgumentParser()
-    argparser.add_argument('-k' '--keyword', action='store', help='Search Keyword')
+    argparser.add_argument('-k', '--keyword', action='store', help='Search Keyword')
     argparser.add_argument('-p', '--place', action='store', help='Place Name')
     argparser.add_argument('-f', '--input_file', action='store', help='Input File (Forward Slash (/) Separated and New Line Separated)')
     argparser.add_argument('-ef', '--example_input_file', action='store_true', help='Example Input File')
+    argparser.add_argument('-cc', '--compiled_csv', action='store_true', help='Compiled CSV')
     args = argparser.parse_args()
 
     if args.example_input_file:
@@ -135,7 +137,7 @@ if __name__ == "__main__":
         exit()
     scraped_data = []
     if not args.input_file:
-        keyword = args.keyword
+        keyword = str(args.keyword.replace('_', ' '))
         place = args.place
         scraped_data = parse_listing(keyword, place)
         if scraped_data:
@@ -143,11 +145,23 @@ if __name__ == "__main__":
     else:
         with open(args.input_file) as f:
             input_lines = f.readlines()
+        number = 0
         for line in input_lines:
             line = line.split('/')
             keyword = line[0]
             place = line[1]
-            scraped_data = parse_listing(keyword, place)
-            if scraped_data:
+            if args.compiled_csv:
+                if number > 0:
+                    scraped_data = scraped_data + parse_listing(keyword, place)
+                    number += 1
+                else:
+                    scraped_data = parse_listing(keyword, place)
+                    number += 1
+            else:
+                scraped_data = parse_listing(keyword, place)
                 write_data_to_file(keyword, place, scraped_data)
-
+        if args.compiled_csv:
+            date = datetime.now()
+            keyword = str(date.month) + '-' + str(date.day)
+            place = str(date.year)
+            write_data_to_file(keyword, place, scraped_data)
