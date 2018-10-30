@@ -1,0 +1,4 @@
+*.txt
+*.csv
+!requirements.txt
+!restaurants-boston-yellowpages-scraped-data.csv

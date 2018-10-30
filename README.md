@@ -53,6 +53,15 @@ to find the business details for restaurants in Boston. MA.
 ```
 python3 yellow_pages.py restaurants Boston,MA
 ```
+```
+python3 yellow-pages.py -f input_file.txt
+```
+**NEED HELP?**
+
+Run the following to see the help for the python file.
+```
+python3 yellow-pages.py -h
+```
 ## Sample Output
 
 This will create a csv file:
