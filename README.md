@@ -34,6 +34,11 @@ Below are the package requirements:
  - requests
 
 ### Installation
+Run the following from the base directory.
+```
+pip install -r requirements.txt
+```
+--OR--
 
 PIP to install the following packages in Python (https://pip.pypa.io/en/stable/installing/) 
 
