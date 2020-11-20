@@ -24,7 +24,7 @@ def parse_listing(keyword, place):
     print("retrieving ", url)
 
     headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-               'Accept-Encoding': 'gzip, deflate, br',
+               'Accept-Encoding': 'gzip, deflate',
                'Accept-Language': 'en-US,en;q=0.5',
                'Cache-Control': 'max-age=0',
                'Connection': 'keep-alive',
@@ -45,7 +45,7 @@ def parse_listing(keyword, place):
             print("parsing page")
             if response.status_code == 200:
                 print("Request 200")
-                parser = html.fromstring(response.text)
+                parser = html.fromstring(response.content)
                 # making links absolute
                 base_url = "https://rainbowpages.lk/"
                 manula = parser.make_links_absolute(base_url)
@@ -53,7 +53,7 @@ def parse_listing(keyword, place):
                 XPATH_LISTINGS = "/html/body/div[1]/div/div/div/div[1]/div/div/div/div/div/div/div[@class='single-product']  "
                 listings = parser.xpath(XPATH_LISTINGS)
                 scraped_results = []
-                print(manula)
+
                 for results in listings:
                     XPATH_BUSINESS_NAME = ".//h4[@class='media-heading']//text()"
                     XPATH_BUSSINESS_PAGE = ".//h4[@class='media-heading']//@href"
@@ -84,6 +84,7 @@ def parse_listing(keyword, place):
                     business_name = ''.join(raw_business_name).strip() if raw_business_name else None
                     telephone = ''.join(raw_business_telephone).strip() if raw_business_telephone else None
                     business_page = ''.join(raw_business_page).strip() if raw_business_page else None
+                    business_address = ''.join(raw_address).strip() if raw_address else None
                     # rank = ''.join(raw_rank).replace('.\xa0', '') if raw_rank else None
                     # category = ','.join(raw_categories).strip() if raw_categories else None
                     # website = ''.join(raw_website).strip() if raw_website else None
@@ -97,7 +98,7 @@ def parse_listing(keyword, place):
                         'business_name': business_name,
                         'telephone': telephone,
                         'business_page': business_page,
-                        'business_address': raw_address
+                        'business_address': business_address
                         # 'rank': rank,
                         # 'category': category,
                         # 'website': website,
@@ -138,8 +139,8 @@ if __name__ == "__main__":
     scraped_data = parse_listing(keyword, place)
 
     if scraped_data:
-        print("Writing scraped data to %s-%s-yellowpages-scraped-data.csv" % (keyword, place))
-        with open('%s-%s-yellowpages-scraped-data.csv' % (keyword, place), 'wb') as csvfile:
+        print("Writing scraped data to %s-%s-rainbowpages-scraped-data.csv" % (keyword, place))
+        with open('%s-%s-rainbowpages-scraped-data.csv' % (keyword, place), 'wb') as csvfile:
             fieldnames = ['business_name', 'telephone', 'business_page', 'business_address']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
             writer.writeheader()
