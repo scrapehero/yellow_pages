@@ -48,12 +48,12 @@ def parse_listing(keyword, place):
                 parser = html.fromstring(response.text)
                 # making links absolute
                 base_url = "https://rainbowpages.lk/"
-                parser.make_links_absolute(base_url)
+                manula = parser.make_links_absolute(base_url)
                 print("Request pass absolute")
-                XPATH_LISTINGS = "//div[@class='single-product']"
+                XPATH_LISTINGS = "/html/body/div[1]/div/div/div/div[1]/div/div/div/div/div/div/div[@class='single-product']  "
                 listings = parser.xpath(XPATH_LISTINGS)
                 scraped_results = []
-                print(listings)
+                print(manula)
                 for results in listings:
                     XPATH_BUSINESS_NAME = ".//h4[@class='media-heading']//text()"
                     XPATH_BUSSINESS_PAGE = ".//h4[@class='media-heading']//@href"
